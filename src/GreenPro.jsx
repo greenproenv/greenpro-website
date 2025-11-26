@@ -1,5 +1,6 @@
 // src/GreenPro.jsx
 import React, { useEffect, useState } from 'react';
+import DatePicker from 'react-datepicker';
 
 const GreenPro = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,7 +17,7 @@ const GreenPro = () => {
     name: '',
     phone: '',
     email: '',
-    date: '',
+    date: nill, // null for date picker use
     time: '',
     service: 'Interior Demolition'
   });
@@ -85,6 +86,21 @@ const GreenPro = () => {
     }
   };
 
+  // Handle date change for DatePicker
+  const handleDateChange = (date) => {
+    setBookingForm(prev => ({
+      ...prev,
+      date: date
+    }));
+    
+    // Clear date error if any
+    if (formErrors.date) {
+      setFormErrors(prev => ({
+        ...prev,
+        date: ''
+      }));
+    }
+  };
   // Form validation
   const validateForm = (formData, formType) => {
     const errors = {};
@@ -450,13 +466,14 @@ const GreenPro = () => {
               </div>
               
               <div>
-                <input 
-                  type="date" 
-                  name="date" 
-                  className={`border p-3 rounded w-full ${formErrors.date ? 'border-red-500' : ''}`} 
-                  value={bookingForm.date}
-                  onChange={handleBookingInputChange}
-                  required 
+                <DatePicker
+                  selected={bookingForm.date}
+                  onChange={handleDateChange}
+                  minDate={new Date()}
+                  placeholderText="Select date"
+                  className={`border p-3 rounded w-full ${formErrors.date ? 'border-red-500' : ''}`}
+                  required
+                  dateFormat="MMMM d, yyyy"
                 />
                 {formErrors.date && <p className="text-red-500 text-sm mt-1">{formErrors.date}</p>}
               </div>
