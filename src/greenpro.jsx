@@ -351,7 +351,7 @@ const GreenPro = () => {
             </div>
             <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
               <img 
-                src="/assets/gallery/cleanup1.jpg" 
+                src="/assets/gallery/cleanup-1.jpg" 
                 alt="Clean-up service"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
@@ -365,7 +365,7 @@ const GreenPro = () => {
             </div>
             <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
               <img 
-                src="/assets/gallery/project-completion-1.jpg" 
+                src="/assets/gallery/project-complete-1.jpg" 
                 alt="Project completion"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
