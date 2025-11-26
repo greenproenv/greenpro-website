@@ -1,3 +1,16 @@
+function App() {
+  return (
+    <div className="p-8">
+      <div className="bg-red-500 text-white p-4 rounded mb-4">
+        测试：如果这是红色背景，Tailwind 基础样式工作正常
+      </div>
+      <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded">
+        测试：如果这是渐变背景，Tailwind 渐变功能工作正常
+      </div>
+    </div>
+  );
+}
+
 import React, { useState } from 'react';
 
 /*
