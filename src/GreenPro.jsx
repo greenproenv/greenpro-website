@@ -2,95 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 
-// 在 GreenPro.jsx 的組件頂部添加狀態
-const [estimate, setEstimate] = useState(null);
-const [showEstimate, setShowEstimate] = useState(false);
-
-// 添加估算計算函數
-const calculateEstimate = (service, area, rooms) => {
-  // 基礎價格
-  let basePrice = 0;
-  let ratePerSqFt = 0;
-  
-  switch(service) {
-    case 'Interior Demolition':
-      basePrice = 300;
-      ratePerSqFt = 2.5;
-      break;
-    case 'Drywall Removal':
-      basePrice = 200;
-      ratePerSqFt = 1.8;
-      break;
-    case 'Site Clean-Up':
-      basePrice = 150;
-      ratePerSqFt = 1.2;
-      break;
-    case 'Garbage Removal':
-      basePrice = 250;
-      ratePerSqFt = 2.0;
-      break;
-    default:
-      basePrice = 200;
-      ratePerSqFt = 1.5;
-  }
-  
-  // 計算面積費用
-  const areaCost = area ? (parseFloat(area) * ratePerSqFt) : 0;
-  
-  // 房間附加費
-  const roomFee = rooms ? (parseInt(rooms) * 50) : 0;
-  
-  // 總估算
-  const totalEstimate = basePrice + areaCost + roomFee;
-  
-  return {
-    basePrice,
-    areaCost,
-    roomFee,
-    totalEstimate,
-    ratePerSqFt
-  };
-};
-
-// 修改 handleQuoteSubmit 函數
-const handleQuoteSubmit = (e) => {
-  e.preventDefault();
-  const errors = validateForm(quoteForm, 'quote');
-  
-  if (Object.keys(errors).length === 0) {
-    // 計算估算
-    const estimateData = calculateEstimate(
-      quoteForm.service, 
-      quoteForm.area, 
-      quoteForm.rooms
-    );
-    
-    setEstimate(estimateData);
-    setShowEstimate(true);
-    setFormSuccess('Estimate calculated successfully!');
-    
-    // 清除成功消息 after 5 seconds
-    setTimeout(() => setFormSuccess(''), 5000);
-  } else {
-    setFormErrors(errors);
-  }
-};
-
-// 添加重置估算函數
-const resetEstimate = () => {
-  setShowEstimate(false);
-  setEstimate(null);
-  setQuoteForm({
-    name: '',
-    phone: '',
-    email: '',
-    service: 'Interior Demolition',
-    area: '',
-    rooms: '',
-    description: ''
-  });
-};
-
 const GreenPro = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [quoteForm, setQuoteForm] = useState({
@@ -106,12 +17,75 @@ const GreenPro = () => {
     name: '',
     phone: '',
     email: '',
-    date: nill, // null for date picker use
+    date: null, // 修正：nill -> null
     time: '',
     service: 'Interior Demolition'
   });
   const [formErrors, setFormErrors] = useState({});
   const [formSuccess, setFormSuccess] = useState('');
+  const [estimate, setEstimate] = useState(null);
+  const [showEstimate, setShowEstimate] = useState(false);
+
+  // 添加估算計算函數
+  const calculateEstimate = (service, area, rooms) => {
+    // 基礎價格
+    let basePrice = 0;
+    let ratePerSqFt = 0;
+    
+    switch(service) {
+      case 'Interior Demolition':
+        basePrice = 300;
+        ratePerSqFt = 2.5;
+        break;
+      case 'Drywall Removal':
+        basePrice = 200;
+        ratePerSqFt = 1.8;
+        break;
+      case 'Site Clean-Up':
+        basePrice = 150;
+        ratePerSqFt = 1.2;
+        break;
+      case 'Garbage Removal':
+        basePrice = 250;
+        ratePerSqFt = 2.0;
+        break;
+      default:
+        basePrice = 200;
+        ratePerSqFt = 1.5;
+    }
+    
+    // 計算面積費用
+    const areaCost = area ? (parseFloat(area) * ratePerSqFt) : 0;
+    
+    // 房間附加費
+    const roomFee = rooms ? (parseInt(rooms) * 50) : 0;
+    
+    // 總估算
+    const totalEstimate = basePrice + areaCost + roomFee;
+    
+    return {
+      basePrice,
+      areaCost,
+      roomFee,
+      totalEstimate,
+      ratePerSqFt
+    };
+  };
+
+  // 添加重置估算函數
+  const resetEstimate = () => {
+    setShowEstimate(false);
+    setEstimate(null);
+    setQuoteForm({
+      name: '',
+      phone: '',
+      email: '',
+      service: 'Interior Demolition',
+      area: '',
+      rooms: '',
+      description: ''
+    });
+  };
 
   useEffect(() => {
     // Set current year in footer
@@ -190,6 +164,7 @@ const GreenPro = () => {
       }));
     }
   };
+
   // Form validation
   const validateForm = (formData, formType) => {
     const errors = {};
@@ -221,27 +196,24 @@ const GreenPro = () => {
     return errors;
   };
 
+  // 修改 handleQuoteSubmit 函數
   const handleQuoteSubmit = (e) => {
     e.preventDefault();
     const errors = validateForm(quoteForm, 'quote');
     
     if (Object.keys(errors).length === 0) {
-      // Form is valid, submit it
-      setFormSuccess('Quote request submitted! We will contact you soon.');
-      alert('Quote request submitted! We will contact you soon.');
+      // 計算估算
+      const estimateData = calculateEstimate(
+        quoteForm.service, 
+        quoteForm.area, 
+        quoteForm.rooms
+      );
       
-      // Reset form
-      setQuoteForm({
-        name: '',
-        phone: '',
-        email: '',
-        service: 'Interior Demolition',
-        area: '',
-        rooms: '',
-        description: ''
-      });
+      setEstimate(estimateData);
+      setShowEstimate(true);
+      setFormSuccess('Estimate calculated successfully!');
       
-      // Clear success message after 5 seconds
+      // 清除成功消息 after 5 seconds
       setTimeout(() => setFormSuccess(''), 5000);
     } else {
       setFormErrors(errors);
@@ -262,7 +234,7 @@ const GreenPro = () => {
         name: '',
         phone: '',
         email: '',
-        date: '',
+        date: null,
         time: '',
         service: 'Interior Demolition'
       });
@@ -370,16 +342,16 @@ const GreenPro = () => {
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Our Work</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-             <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+            <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
               <img 
-                 src="/assets/gallery/demolition-1.jpg" 
-                 alt="Demolition work"
-                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                src="/assets/gallery/demolition-1.jpg" 
+                alt="Demolition work"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
-              </div>
-              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+            </div>
+            <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
               <img 
-               src="/assets/gallery/cleanup1.jpg" 
+                src="/assets/gallery/cleanup1.jpg" 
                 alt="Clean-up service"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
@@ -401,19 +373,18 @@ const GreenPro = () => {
             <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
               <img 
                 src="/assets/gallery/team-work-1.jpg" 
-               alt="Team at work"
-               className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                alt="Team at work"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
             <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
-            <img 
-               src="/assets/gallery/eco-disposal-1.jpg" 
+              <img 
+                src="/assets/gallery/eco-disposal-1.jpg" 
                 alt="Eco-friendly disposal"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-             />
+              />
             </div>
           </div>
-        
         </div>
       </section>
 
@@ -425,238 +396,154 @@ const GreenPro = () => {
             <p className="text-sm text-gray-600 mb-4">Fill the form and get an instant estimate. We'll contact you with details.</p>
 
             {showEstimate ? (
-        // 顯示估算結果
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6">
-          <h4 className="text-xl font-bold text-emerald-800 mb-4">Your Estimate</h4>
-          
-          <div className="space-y-3 mb-6">
-            <div className="flex justify-between">
-              <span>Base Price ({quoteForm.service}):</span>
-              <span>${estimate.basePrice.toFixed(2)}</span>
-            </div>
-            {quoteForm.area && (
-              <div className="flex justify-between">
-                <span>Area Cost ({quoteForm.area} sq ft × ${estimate.ratePerSqFt}/sq ft):</span>
-                <span>${estimate.areaCost.toFixed(2)}</span>
+              // 顯示估算結果
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6">
+                <h4 className="text-xl font-bold text-emerald-800 mb-4">Your Estimate</h4>
+                
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between">
+                    <span>Base Price ({quoteForm.service}):</span>
+                    <span>${estimate.basePrice.toFixed(2)}</span>
+                  </div>
+                  {quoteForm.area && (
+                    <div className="flex justify-between">
+                      <span>Area Cost ({quoteForm.area} sq ft × ${estimate.ratePerSqFt}/sq ft):</span>
+                      <span>${estimate.areaCost.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {quoteForm.rooms && (
+                    <div className="flex justify-between">
+                      <span>Room Fee ({quoteForm.rooms} rooms × $50/room):</span>
+                      <span>${estimate.roomFee.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="border-t pt-3 mt-3">
+                    <div className="flex justify-between text-lg font-bold">
+                      <span>Total Estimate:</span>
+                      <span className="text-emerald-700">${estimate.totalEstimate.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <p className="text-sm text-gray-600 mb-4">
+                  * This is an approximate estimate. Final pricing may vary based on project complexity and site conditions.
+                </p>
+                
+                <div className="flex gap-3">
+                  <button 
+                    onClick={resetEstimate}
+                    className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                  >
+                    New Estimate
+                  </button>
+                  <button 
+                    onClick={() => {
+                      alert('Our team will contact you shortly to confirm details and schedule!');
+                      resetEstimate();
+                    }}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded"
+                  >
+                    Confirm & Schedule
+                  </button>
+                </div>
               </div>
+            ) : (
+              // 顯示估算表單
+              <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleQuoteSubmit}>
+                <div>
+                  <input 
+                    name="name" 
+                    placeholder="Full name" 
+                    className={`border p-3 rounded w-full ${formErrors.name ? 'border-red-500' : ''}`} 
+                    value={quoteForm.name}
+                    onChange={handleQuoteInputChange}
+                    required 
+                  />
+                  {formErrors.name && <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>}
+                </div>
+                
+                <div>
+                  <input 
+                    name="phone" 
+                    placeholder="Phone" 
+                    className={`border p-3 rounded w-full ${formErrors.phone ? 'border-red-500' : ''}`} 
+                    value={quoteForm.phone}
+                    onChange={handleQuoteInputChange}
+                    required 
+                  />
+                  {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
+                </div>
+                
+                <div className="md:col-span-2">
+                  <input 
+                    name="email" 
+                    placeholder="Email" 
+                    className={`border p-3 rounded w-full ${formErrors.email ? 'border-red-500' : ''}`} 
+                    type="email" 
+                    value={quoteForm.email}
+                    onChange={handleQuoteInputChange}
+                    required 
+                  />
+                  {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
+                </div>
+                
+                <div className="md:col-span-2">
+                  <select 
+                    name="service" 
+                    className="border p-3 rounded w-full"
+                    value={quoteForm.service}
+                    onChange={handleQuoteInputChange}
+                  >
+                    <option>Interior Demolition</option>
+                    <option>Drywall Removal</option>
+                    <option>Site Clean-Up</option>
+                    <option>Garbage Removal</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <input 
+                    name="area" 
+                    placeholder="Approx area (sq ft)" 
+                    className="border p-3 rounded w-full"
+                    type="number"
+                    min="0"
+                    value={quoteForm.area}
+                    onChange={handleQuoteInputChange}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Optional - for more accurate estimate</p>
+                </div>
+                
+                <div>
+                  <input 
+                    name="rooms" 
+                    placeholder="# rooms" 
+                    className="border p-3 rounded w-full"
+                    type="number"
+                    min="0"
+                    value={quoteForm.rooms}
+                    onChange={handleQuoteInputChange}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Optional - for more accurate estimate</p>
+                </div>
+                
+                <div className="md:col-span-2">
+                  <textarea 
+                    name="description" 
+                    placeholder="Project details, hazards, access notes" 
+                    className="border p-3 rounded w-full"
+                    value={quoteForm.description}
+                    onChange={handleQuoteInputChange}
+                  ></textarea>
+                </div>
+
+                <div className="flex gap-3 md:col-span-2">
+                  <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded" type="submit">
+                    Get Estimate
+                  </button>
+                </div>
+              </form>
             )}
-            {quoteForm.rooms && (
-              <div className="flex justify-between">
-                <span>Room Fee ({quoteForm.rooms} rooms × $50/room):</span>
-                <span>${estimate.roomFee.toFixed(2)}</span>
-              </div>
-            )}
-            <div className="border-t pt-3 mt-3">
-              <div className="flex justify-between text-lg font-bold">
-                <span>Total Estimate:</span>
-                <span className="text-emerald-700">${estimate.totalEstimate.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-          
-          <p className="text-sm text-gray-600 mb-4">
-            * This is an approximate estimate. Final pricing may vary based on project complexity and site conditions.
-          </p>
-          
-          <div className="flex gap-3">
-            <button 
-              onClick={resetEstimate}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-            >
-              New Estimate
-            </button>
-            <button 
-              onClick={() => {
-                alert('Our team will contact you shortly to confirm details and schedule!');
-                resetEstimate();
-              }}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded"
-            >
-              Confirm & Schedule
-            </button>
-          </div>
-        </div>
-      ) : (
-        // 顯示估算表單
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleQuoteSubmit}>
-          <div>
-            <input 
-              name="name" 
-              placeholder="Full name" 
-              className={`border p-3 rounded w-full ${formErrors.name ? 'border-red-500' : ''}`} 
-              value={quoteForm.name}
-              onChange={handleQuoteInputChange}
-              required 
-            />
-            {formErrors.name && <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>}
-          </div>
-          
-          <div>
-            <input 
-              name="phone" 
-              placeholder="Phone" 
-              className={`border p-3 rounded w-full ${formErrors.phone ? 'border-red-500' : ''}`} 
-              value={quoteForm.phone}
-              onChange={handleQuoteInputChange}
-              required 
-            />
-            {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
-          </div>
-          
-          <div className="md:col-span-2">
-            <input 
-              name="email" 
-              placeholder="Email" 
-              className={`border p-3 rounded w-full ${formErrors.email ? 'border-red-500' : ''}`} 
-              type="email" 
-              value={quoteForm.email}
-              onChange={handleQuoteInputChange}
-              required 
-            />
-            {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
-          </div>
-          
-          <div className="md:col-span-2">
-            <select 
-              name="service" 
-              className="border p-3 rounded w-full"
-              value={quoteForm.service}
-              onChange={handleQuoteInputChange}
-            >
-              <option>Interior Demolition</option>
-              <option>Drywall Removal</option>
-              <option>Site Clean-Up</option>
-              <option>Garbage Removal</option>
-            </select>
-          </div>
-          
-          <div>
-            <input 
-              name="area" 
-              placeholder="Approx area (sq ft)" 
-              className="border p-3 rounded w-full"
-              type="number"
-              min="0"
-              value={quoteForm.area}
-              onChange={handleQuoteInputChange}
-            />
-            <p className="text-xs text-gray-500 mt-1">Optional - for more accurate estimate</p>
-          </div>
-          
-          <div>
-            <input 
-              name="rooms" 
-              placeholder="# rooms" 
-              className="border p-3 rounded w-full"
-              type="number"
-              min="0"
-              value={quoteForm.rooms}
-              onChange={handleQuoteInputChange}
-            />
-            <p className="text-xs text-gray-500 mt-1">Optional - for more accurate estimate</p>
-          </div>
-          
-          <div className="md:col-span-2">
-            <textarea 
-              name="description" 
-              placeholder="Project details, hazards, access notes" 
-              className="border p-3 rounded w-full"
-              value={quoteForm.description}
-              onChange={handleQuoteInputChange}
-            ></textarea>
-          </div>
-
-          <div className="flex gap-3 md:col-span-2">
-            <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded" type="submit">
-              Get Estimate
-            </button>
-          </div>
-        </form>
-      )}
-
-
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleQuoteSubmit}>
-              <div>
-                <input 
-                  name="name" 
-                  placeholder="Full name" 
-                  className={`border p-3 rounded w-full ${formErrors.name ? 'border-red-500' : ''}`} 
-                  value={quoteForm.name}
-                  onChange={handleQuoteInputChange}
-                  required 
-                />
-                {formErrors.name && <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>}
-              </div>
-              
-              <div>
-                <input 
-                  name="phone" 
-                  placeholder="Phone" 
-                  className={`border p-3 rounded w-full ${formErrors.phone ? 'border-red-500' : ''}`} 
-                  value={quoteForm.phone}
-                  onChange={handleQuoteInputChange}
-                  required 
-                />
-                {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
-              </div>
-              
-              <div className="md:col-span-2">
-                <input 
-                  name="email" 
-                  placeholder="Email" 
-                  className={`border p-3 rounded w-full ${formErrors.email ? 'border-red-500' : ''}`} 
-                  type="email" 
-                  value={quoteForm.email}
-                  onChange={handleQuoteInputChange}
-                  required 
-                />
-                {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
-              </div>
-              
-              <div className="md:col-span-2">
-                <select 
-                  name="service" 
-                  className="border p-3 rounded w-full"
-                  value={quoteForm.service}
-                  onChange={handleQuoteInputChange}
-                >
-                  <option>Interior Demolition</option>
-                  <option>Drywall Removal</option>
-                  <option>Site Clean-Up</option>
-                  <option>Garbage Removal</option>
-                </select>
-              </div>
-              
-              <input 
-                name="area" 
-                placeholder="Approx area (sq ft)" 
-                className="border p-3 rounded" 
-                value={quoteForm.area}
-                onChange={handleQuoteInputChange}
-              />
-              
-              <input 
-                name="rooms" 
-                placeholder="# rooms" 
-                className="border p-3 rounded" 
-                value={quoteForm.rooms}
-                onChange={handleQuoteInputChange}
-              />
-              
-              <div className="md:col-span-2">
-                <textarea 
-                  name="description" 
-                  placeholder="Project details, hazards, access notes" 
-                  className="border p-3 rounded w-full"
-                  value={quoteForm.description}
-                  onChange={handleQuoteInputChange}
-                ></textarea>
-              </div>
-
-              <div className="flex gap-3 md:col-span-2">
-                <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded" type="submit">Get Estimate</button>
-              </div>
-            </form>
           </div>
         </div>
       </section>
