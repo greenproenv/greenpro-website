@@ -1,4 +1,5 @@
 // GreenPro.jsx
+import GreenPro from './GreenPro';
 import React, { useEffect } from 'react';
 
 const GreenPro = () => {
