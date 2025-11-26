@@ -25,6 +25,7 @@ const GreenPro = () => {
   const [formSuccess, setFormSuccess] = useState('');
   const [estimate, setEstimate] = useState(null);
   const [showEstimate, setShowEstimate] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 添加估算計算函數
   const calculateEstimate = (service, area, rooms) => {
@@ -85,6 +86,46 @@ const GreenPro = () => {
       rooms: '',
       description: ''
     });
+  };
+
+  // Formspree 提交函數
+  const submitToFormspree = async (formData, formType) => {
+    setIsSubmitting(true);
+    
+    try {
+      // 格式化數據以適應 Formspree
+      const formattedData = {
+        ...formData,
+        _subject: `${formType} - Greenpro Environmental Ltd.`,
+        _replyto: formData.email,
+        formType: formType,
+        // 為預訂表單格式化日期
+        date: formData.date ? formData.date.toLocaleDateString() : '',
+        // 為報價表單添加估算信息
+        estimate: formType === 'quote' && estimate ? `$${estimate.totalEstimate.toFixed(2)}` : ''
+      };
+
+      const response = await fetch('https://formspree.io/f/xeobqzyr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedData),
+      });
+
+      if (response.ok) {
+        setFormSuccess(`${formType === 'quote' ? 'Quote request' : 'Booking'} submitted successfully! We will contact you soon.`);
+        return true;
+      } else {
+        throw new Error('Form submission failed');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setFormSuccess(`There was an error submitting your ${formType}. Please try again or contact us directly.`);
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -197,7 +238,7 @@ const GreenPro = () => {
   };
 
   // 修改 handleQuoteSubmit 函數
-  const handleQuoteSubmit = (e) => {
+  const handleQuoteSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm(quoteForm, 'quote');
     
@@ -211,36 +252,44 @@ const GreenPro = () => {
       
       setEstimate(estimateData);
       setShowEstimate(true);
-      setFormSuccess('Estimate calculated successfully!');
       
-      // 清除成功消息 after 5 seconds
-      setTimeout(() => setFormSuccess(''), 5000);
+      // 提交到 Formspree
+      const success = await submitToFormspree({
+        ...quoteForm,
+        estimate: estimateData.totalEstimate.toFixed(2)
+      }, 'quote');
+      
+      if (success) {
+        // 清除成功消息 after 5 seconds
+        setTimeout(() => setFormSuccess(''), 5000);
+      }
     } else {
       setFormErrors(errors);
     }
   };
 
-  const handleBookingSubmit = (e) => {
+  const handleBookingSubmit = async (e) => {
     e.preventDefault();
     const errors = validateForm(bookingForm, 'booking');
     
     if (Object.keys(errors).length === 0) {
-      // Form is valid, submit it
-      setFormSuccess('Booking request submitted! We will contact you to confirm.');
-      alert('Booking request submitted! We will contact you to confirm.');
+      // 提交到 Formspree
+      const success = await submitToFormspree(bookingForm, 'booking');
       
-      // Reset form
-      setBookingForm({
-        name: '',
-        phone: '',
-        email: '',
-        date: null,
-        time: '',
-        service: 'Interior Demolition'
-      });
-      
-      // Clear success message after 5 seconds
-      setTimeout(() => setFormSuccess(''), 5000);
+      if (success) {
+        // Reset form
+        setBookingForm({
+          name: '',
+          phone: '',
+          email: '',
+          date: null,
+          time: '',
+          service: 'Interior Demolition'
+        });
+        
+        // Clear success message after 5 seconds
+        setTimeout(() => setFormSuccess(''), 5000);
+      }
     } else {
       setFormErrors(errors);
     }
@@ -538,8 +587,22 @@ const GreenPro = () => {
                 </div>
 
                 <div className="flex gap-3 md:col-span-2">
-                  <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded" type="submit">
-                    Get Estimate
+                  <button 
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded flex items-center justify-center min-w-[120px]" 
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                      </>
+                    ) : (
+                      'Get Estimate'
+                    )}
                   </button>
                 </div>
               </form>
@@ -632,7 +695,23 @@ const GreenPro = () => {
               </div>
 
               <div className="md:col-span-2">
-                <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Request Booking</button>
+                <button 
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded flex items-center justify-center w-full" 
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </>
+                  ) : (
+                    'Request Booking'
+                  )}
+                </button>
               </div>
             </form>
           </div>
