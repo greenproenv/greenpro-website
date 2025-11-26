@@ -265,25 +265,50 @@ const GreenPro = () => {
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Our Work</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-              <span className="text-gray-500">Demolition work</span>
+             <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+              <img 
+                 src="/assets/gallery/demolition-1.jpg" 
+                 alt="Demolition work"
+                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+              </div>
+              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+              <img 
+               src="/assets/gallery/cleanup1.jpg" 
+                alt="Clean-up service"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
             </div>
-            <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-              <span className="text-gray-500">Clean-up service</span>
+            <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+              <img 
+                src="/assets/gallery/waste-removal-1.jpg" 
+                alt="Waste removal"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
             </div>
-            <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-              <span className="text-gray-500">Waste removal</span>
+            <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+              <img 
+                src="/assets/gallery/project-completion-1.jpg" 
+                alt="Project completion"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
             </div>
-            <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-              <span className="text-gray-500">Project completion</span>
+            <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+              <img 
+                src="/assets/gallery/team-work-1.jpg" 
+               alt="Team at work"
+               className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
             </div>
-            <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-              <span className="text-gray-500">Team at work</span>
-            </div>
-            <div className="bg-gray-200 rounded-lg aspect-video flex items-center justify-center">
-              <span className="text-gray-500">Eco-friendly disposal</span>
+            <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+            <img 
+               src="/assets/gallery/eco-disposal-1.jpg" 
+                alt="Eco-friendly disposal"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+             />
             </div>
           </div>
+        
         </div>
       </section>
 
