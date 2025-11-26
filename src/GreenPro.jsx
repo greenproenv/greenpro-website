@@ -17,7 +17,7 @@ const GreenPro = () => {
     name: '',
     phone: '',
     email: '',
-    date: null, // 修正：nill -> null
+    date: null,
     time: '',
     service: 'Interior Demolition'
   });
@@ -26,6 +26,15 @@ const GreenPro = () => {
   const [estimate, setEstimate] = useState(null);
   const [showEstimate, setShowEstimate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [estimateCount, setEstimateCount] = useState(0);
+
+  // 從 localStorage 加載估算計數
+  useEffect(() => {
+    const savedCount = localStorage.getItem('greenpro_estimate_count');
+    if (savedCount) {
+      setEstimateCount(parseInt(savedCount, 10));
+    }
+  }, []);
 
   // 添加估算計算函數
   const calculateEstimate = (service, area, rooms) => {
@@ -88,21 +97,69 @@ const GreenPro = () => {
     });
   };
 
-  // Formspree 提交函數
-  const submitToFormspree = async (formData, formType) => {
+  // Formspree 提交函數 - 專門用於估算統計
+  const submitEstimateStat = async (estimateData, formData) => {
+    try {
+      // 更新本地估算計數
+      const newCount = estimateCount + 1;
+      setEstimateCount(newCount);
+      localStorage.setItem('greenpro_estimate_count', newCount.toString());
+
+      const estimateStatData = {
+        _subject: `Estimate Request #${newCount} - Greenpro Environmental Ltd.`,
+        _replyto: formData.email || 'no-email@greenpro.com',
+        formType: 'estimate_statistics',
+        estimateCount: newCount,
+        service: formData.service,
+        area: formData.area || 'Not specified',
+        rooms: formData.rooms || 'Not specified',
+        totalEstimate: estimateData.totalEstimate.toFixed(2),
+        basePrice: estimateData.basePrice,
+        areaCost: estimateData.areaCost,
+        roomFee: estimateData.roomFee,
+        customerName: formData.name || 'Anonymous',
+        customerPhone: formData.phone || 'Not provided',
+        customerEmail: formData.email || 'Not provided',
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent
+      };
+
+      const response = await fetch('https://formspree.io/f/xeobqzyr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(estimateStatData),
+      });
+
+      if (response.ok) {
+        console.log('Estimate statistics submitted successfully');
+        return true;
+      } else {
+        throw new Error('Estimate statistics submission failed');
+      }
+    } catch (error) {
+      console.error('Estimate statistics submission error:', error);
+      return false;
+    }
+  };
+
+  // Formspree 提交函數 - 用於正式報價請求
+  const submitQuoteRequest = async (formData, estimateData) => {
     setIsSubmitting(true);
     
     try {
-      // 格式化數據以適應 Formspree
       const formattedData = {
         ...formData,
-        _subject: `${formType} - Greenpro Environmental Ltd.`,
+        _subject: `Quote Request - ${formData.service} - Greenpro Environmental Ltd.`,
         _replyto: formData.email,
-        formType: formType,
-        // 為預訂表單格式化日期
-        date: formData.date ? formData.date.toLocaleDateString() : '',
-        // 為報價表單添加估算信息
-        estimate: formType === 'quote' && estimate ? `$${estimate.totalEstimate.toFixed(2)}` : ''
+        formType: 'quote_request',
+        estimate: estimateData.totalEstimate.toFixed(2),
+        basePrice: estimateData.basePrice,
+        areaCost: estimateData.areaCost,
+        roomFee: estimateData.roomFee,
+        ratePerSqFt: estimateData.ratePerSqFt,
+        timestamp: new Date().toISOString()
       };
 
       const response = await fetch('https://formspree.io/f/xeobqzyr', {
@@ -114,14 +171,51 @@ const GreenPro = () => {
       });
 
       if (response.ok) {
-        setFormSuccess(`${formType === 'quote' ? 'Quote request' : 'Booking'} submitted successfully! We will contact you soon.`);
+        setFormSuccess('Quote request submitted successfully! We will contact you soon.');
         return true;
       } else {
-        throw new Error('Form submission failed');
+        throw new Error('Quote request submission failed');
       }
     } catch (error) {
-      console.error('Form submission error:', error);
-      setFormSuccess(`There was an error submitting your ${formType}. Please try again or contact us directly.`);
+      console.error('Quote request submission error:', error);
+      setFormSuccess('There was an error submitting your quote request. Please try again or contact us directly.');
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Formspree 提交函數 - 用於預訂請求
+  const submitBookingRequest = async (formData) => {
+    setIsSubmitting(true);
+    
+    try {
+      const formattedData = {
+        ...formData,
+        _subject: `Booking Request - ${formData.service} - Greenpro Environmental Ltd.`,
+        _replyto: formData.email,
+        formType: 'booking_request',
+        date: formData.date ? formData.date.toLocaleDateString() : '',
+        timestamp: new Date().toISOString()
+      };
+
+      const response = await fetch('https://formspree.io/f/xeobqzyr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedData),
+      });
+
+      if (response.ok) {
+        setFormSuccess('Booking request submitted successfully! We will contact you to confirm.');
+        return true;
+      } else {
+        throw new Error('Booking request submission failed');
+      }
+    } catch (error) {
+      console.error('Booking request submission error:', error);
+      setFormSuccess('There was an error submitting your booking request. Please try again or contact us directly.');
       return false;
     } finally {
       setIsSubmitting(false);
@@ -253,13 +347,18 @@ const GreenPro = () => {
       setEstimate(estimateData);
       setShowEstimate(true);
       
-      // 提交到 Formspree
-      const success = await submitToFormspree({
-        ...quoteForm,
-        estimate: estimateData.totalEstimate.toFixed(2)
-      }, 'quote');
+      // 提交估算統計數據（不等待完成）
+      submitEstimateStat(estimateData, quoteForm);
       
-      if (success) {
+      // 如果有聯繫信息，同時提交正式報價請求
+      if (quoteForm.name && quoteForm.email) {
+        await submitQuoteRequest(quoteForm, estimateData);
+        
+        // 清除成功消息 after 5 seconds
+        setTimeout(() => setFormSuccess(''), 5000);
+      } else {
+        setFormSuccess('Estimate calculated successfully! Fill in your contact details to receive the full quote.');
+        
         // 清除成功消息 after 5 seconds
         setTimeout(() => setFormSuccess(''), 5000);
       }
@@ -274,7 +373,7 @@ const GreenPro = () => {
     
     if (Object.keys(errors).length === 0) {
       // 提交到 Formspree
-      const success = await submitToFormspree(bookingForm, 'booking');
+      const success = await submitBookingRequest(bookingForm);
       
       if (success) {
         // Reset form
@@ -292,6 +391,19 @@ const GreenPro = () => {
       }
     } else {
       setFormErrors(errors);
+    }
+  };
+
+  // 處理確認和預約
+  const handleConfirmAndSchedule = async () => {
+    if (estimate && quoteForm.name && quoteForm.email) {
+      const success = await submitQuoteRequest(quoteForm, estimate);
+      if (success) {
+        alert('Our team will contact you shortly to confirm details and schedule!');
+        resetEstimate();
+      }
+    } else {
+      alert('Please fill in your contact details to confirm and schedule.');
     }
   };
 
@@ -486,10 +598,7 @@ const GreenPro = () => {
                     New Estimate
                   </button>
                   <button 
-                    onClick={() => {
-                      alert('Our team will contact you shortly to confirm details and schedule!');
-                      resetEstimate();
-                    }}
+                    onClick={handleConfirmAndSchedule}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded"
                   >
                     Confirm & Schedule
