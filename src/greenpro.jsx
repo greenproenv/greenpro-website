@@ -1,7 +1,28 @@
 // src/GreenPro.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const GreenPro = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [quoteForm, setQuoteForm] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    service: 'Interior Demolition',
+    area: '',
+    rooms: '',
+    description: ''
+  });
+  const [bookingForm, setBookingForm] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    date: '',
+    time: '',
+    service: 'Interior Demolition'
+  });
+  const [formErrors, setFormErrors] = useState({});
+  const [formSuccess, setFormSuccess] = useState('');
+
   useEffect(() => {
     // Set current year in footer
     document.getElementById('current-year').textContent = new Date().getFullYear();
@@ -17,6 +38,8 @@ const GreenPro = () => {
             block: 'start'
           });
         }
+        // Close mobile menu when clicking a link
+        setIsMenuOpen(false);
       });
     });
 
@@ -28,19 +51,127 @@ const GreenPro = () => {
     };
   }, []);
 
+  // Handle quote form input changes
+  const handleQuoteInputChange = (e) => {
+    const { name, value } = e.target;
+    setQuoteForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  // Handle booking form input changes
+  const handleBookingInputChange = (e) => {
+    const { name, value } = e.target;
+    setBookingForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  // Form validation
+  const validateForm = (formData, formType) => {
+    const errors = {};
+    
+    if (!formData.name.trim()) {
+      errors.name = 'Name is required';
+    }
+    
+    if (!formData.phone.trim()) {
+      errors.phone = 'Phone number is required';
+    } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
+      errors.phone = 'Please enter a valid 10-digit phone number';
+    }
+    
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    
+    if (formType === 'booking' && !formData.date) {
+      errors.date = 'Date is required';
+    }
+    
+    if (formType === 'booking' && !formData.time) {
+      errors.time = 'Time is required';
+    }
+    
+    return errors;
+  };
+
   const handleQuoteSubmit = (e) => {
     e.preventDefault();
-    alert('Quote request submitted! We will contact you soon.');
+    const errors = validateForm(quoteForm, 'quote');
+    
+    if (Object.keys(errors).length === 0) {
+      // Form is valid, submit it
+      setFormSuccess('Quote request submitted! We will contact you soon.');
+      alert('Quote request submitted! We will contact you soon.');
+      
+      // Reset form
+      setQuoteForm({
+        name: '',
+        phone: '',
+        email: '',
+        service: 'Interior Demolition',
+        area: '',
+        rooms: '',
+        description: ''
+      });
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => setFormSuccess(''), 5000);
+    } else {
+      setFormErrors(errors);
+    }
   };
 
   const handleBookingSubmit = (e) => {
     e.preventDefault();
-    alert('Booking request submitted! We will contact you to confirm.');
+    const errors = validateForm(bookingForm, 'booking');
+    
+    if (Object.keys(errors).length === 0) {
+      // Form is valid, submit it
+      setFormSuccess('Booking request submitted! We will contact you to confirm.');
+      alert('Booking request submitted! We will contact you to confirm.');
+      
+      // Reset form
+      setBookingForm({
+        name: '',
+        phone: '',
+        email: '',
+        date: '',
+        time: '',
+        service: 'Interior Demolition'
+      });
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => setFormSuccess(''), 5000);
+    } else {
+      setFormErrors(errors);
+    }
   };
 
   return (
     <div className="font-sans text-gray-800">
-      {/* Header */}
+      {/* Header with Mobile Menu */}
       <header className="bg-gradient-to-r from-emerald-700 to-green-600 text-white">
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -50,14 +181,43 @@ const GreenPro = () => {
               <p className="text-sm">Demolition • Drywall removal • Clean-up • Waste removal</p>
             </div>
           </div>
+          
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             <a href="#services" className="hover:underline">Services</a>
             <a href="#quote" className="hover:underline">Get a Quote</a>
             <a href="#book" className="hover:underline">Book</a>
             <a href="#contact" className="border border-white px-3 py-2 rounded-md">Contact</a>
           </div>
+          
+          {/* Mobile Menu Button */}
+          <button 
+            className="md:hidden flex flex-col justify-center items-center w-8 h-8"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <span className={`bg-white block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isMenuOpen ? 'rotate-45 translate-y-1' : '-translate-y-0.5'}`}></span>
+            <span className={`bg-white block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+            <span className={`bg-white block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isMenuOpen ? '-rotate-45 -translate-y-1' : 'translate-y-0.5'}`}></span>
+          </button>
+        </div>
+        
+        {/* Mobile Navigation Menu */}
+        <div className={`md:hidden bg-emerald-800 transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-64 py-4' : 'max-h-0 py-0'} overflow-hidden`}>
+          <div className="max-w-6xl mx-auto px-6 flex flex-col space-y-4">
+            <a href="#services" className="hover:underline">Services</a>
+            <a href="#quote" className="hover:underline">Get a Quote</a>
+            <a href="#book" className="hover:underline">Book</a>
+            <a href="#contact" className="border border-white px-3 py-2 rounded-md text-center">Contact</a>
+          </div>
         </div>
       </header>
+
+      {/* Success Message */}
+      {formSuccess && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+          {formSuccess}
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="bg-emerald-700 text-white">
@@ -135,18 +295,82 @@ const GreenPro = () => {
             <p className="text-sm text-gray-600 mb-4">Fill the form and get an instant estimate. We'll contact you with details.</p>
 
             <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleQuoteSubmit}>
-              <input name="name" placeholder="Full name" className="border p-3 rounded" required />
-              <input name="phone" placeholder="Phone" className="border p-3 rounded" required />
-              <input name="email" placeholder="Email" className="border p-3 rounded md:col-span-2" type="email" required />
-              <select name="service" className="border p-3 rounded md:col-span-2">
-                <option>Interior Demolition</option>
-                <option>Drywall Removal</option>
-                <option>Site Clean-Up</option>
-                <option>Garbage Removal</option>
-              </select>
-              <input name="area" placeholder="Approx area (sq ft)" className="border p-3 rounded" />
-              <input name="rooms" placeholder="# rooms" className="border p-3 rounded" />
-              <textarea name="description" placeholder="Project details, hazards, access notes" className="border p-3 rounded md:col-span-2"></textarea>
+              <div>
+                <input 
+                  name="name" 
+                  placeholder="Full name" 
+                  className={`border p-3 rounded w-full ${formErrors.name ? 'border-red-500' : ''}`} 
+                  value={quoteForm.name}
+                  onChange={handleQuoteInputChange}
+                  required 
+                />
+                {formErrors.name && <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>}
+              </div>
+              
+              <div>
+                <input 
+                  name="phone" 
+                  placeholder="Phone" 
+                  className={`border p-3 rounded w-full ${formErrors.phone ? 'border-red-500' : ''}`} 
+                  value={quoteForm.phone}
+                  onChange={handleQuoteInputChange}
+                  required 
+                />
+                {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
+              </div>
+              
+              <div className="md:col-span-2">
+                <input 
+                  name="email" 
+                  placeholder="Email" 
+                  className={`border p-3 rounded w-full ${formErrors.email ? 'border-red-500' : ''}`} 
+                  type="email" 
+                  value={quoteForm.email}
+                  onChange={handleQuoteInputChange}
+                  required 
+                />
+                {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
+              </div>
+              
+              <div className="md:col-span-2">
+                <select 
+                  name="service" 
+                  className="border p-3 rounded w-full"
+                  value={quoteForm.service}
+                  onChange={handleQuoteInputChange}
+                >
+                  <option>Interior Demolition</option>
+                  <option>Drywall Removal</option>
+                  <option>Site Clean-Up</option>
+                  <option>Garbage Removal</option>
+                </select>
+              </div>
+              
+              <input 
+                name="area" 
+                placeholder="Approx area (sq ft)" 
+                className="border p-3 rounded" 
+                value={quoteForm.area}
+                onChange={handleQuoteInputChange}
+              />
+              
+              <input 
+                name="rooms" 
+                placeholder="# rooms" 
+                className="border p-3 rounded" 
+                value={quoteForm.rooms}
+                onChange={handleQuoteInputChange}
+              />
+              
+              <div className="md:col-span-2">
+                <textarea 
+                  name="description" 
+                  placeholder="Project details, hazards, access notes" 
+                  className="border p-3 rounded w-full"
+                  value={quoteForm.description}
+                  onChange={handleQuoteInputChange}
+                ></textarea>
+              </div>
 
               <div className="flex gap-3 md:col-span-2">
                 <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded" type="submit">Get Estimate</button>
@@ -163,17 +387,80 @@ const GreenPro = () => {
             <h3 className="text-2xl font-bold mb-3">Online Booking</h3>
             <p className="text-sm text-gray-600 mb-4">Choose a date and time and we'll confirm availability.</p>
             <form onSubmit={handleBookingSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input name="name" placeholder="Full name" className="border p-3 rounded" required />
-              <input name="phone" placeholder="Phone" className="border p-3 rounded" required />
-              <input name="email" placeholder="Email" className="border p-3 rounded md:col-span-2" type="email" required />
-              <input type="date" name="date" className="border p-3 rounded" required />
-              <input type="time" name="time" className="border p-3 rounded" required />
-              <select name="service" className="border p-3 rounded md:col-span-2">
-                <option>Interior Demolition</option>
-                <option>Drywall Removal</option>
-                <option>Site Clean-Up</option>
-                <option>Garbage Removal</option>
-              </select>
+              <div>
+                <input 
+                  name="name" 
+                  placeholder="Full name" 
+                  className={`border p-3 rounded w-full ${formErrors.name ? 'border-red-500' : ''}`} 
+                  value={bookingForm.name}
+                  onChange={handleBookingInputChange}
+                  required 
+                />
+                {formErrors.name && <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>}
+              </div>
+              
+              <div>
+                <input 
+                  name="phone" 
+                  placeholder="Phone" 
+                  className={`border p-3 rounded w-full ${formErrors.phone ? 'border-red-500' : ''}`} 
+                  value={bookingForm.phone}
+                  onChange={handleBookingInputChange}
+                  required 
+                />
+                {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
+              </div>
+              
+              <div className="md:col-span-2">
+                <input 
+                  name="email" 
+                  placeholder="Email" 
+                  className={`border p-3 rounded w-full ${formErrors.email ? 'border-red-500' : ''}`} 
+                  type="email" 
+                  value={bookingForm.email}
+                  onChange={handleBookingInputChange}
+                  required 
+                />
+                {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
+              </div>
+              
+              <div>
+                <input 
+                  type="date" 
+                  name="date" 
+                  className={`border p-3 rounded w-full ${formErrors.date ? 'border-red-500' : ''}`} 
+                  value={bookingForm.date}
+                  onChange={handleBookingInputChange}
+                  required 
+                />
+                {formErrors.date && <p className="text-red-500 text-sm mt-1">{formErrors.date}</p>}
+              </div>
+              
+              <div>
+                <input 
+                  type="time" 
+                  name="time" 
+                  className={`border p-3 rounded w-full ${formErrors.time ? 'border-red-500' : ''}`} 
+                  value={bookingForm.time}
+                  onChange={handleBookingInputChange}
+                  required 
+                />
+                {formErrors.time && <p className="text-red-500 text-sm mt-1">{formErrors.time}</p>}
+              </div>
+              
+              <div className="md:col-span-2">
+                <select 
+                  name="service" 
+                  className="border p-3 rounded w-full"
+                  value={bookingForm.service}
+                  onChange={handleBookingInputChange}
+                >
+                  <option>Interior Demolition</option>
+                  <option>Drywall Removal</option>
+                  <option>Site Clean-Up</option>
+                  <option>Garbage Removal</option>
+                </select>
+              </div>
 
               <div className="md:col-span-2">
                 <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded">Request Booking</button>

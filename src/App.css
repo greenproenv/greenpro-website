@@ -1,3 +1,22 @@
+/* src/App.css */
+.App {
+  text-align: center;
+}
+
+/* 自定義滾動行為 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 表單錯誤狀態的額外樣式 */
+.border-red-500 {
+  border-color: #ef4444;
+}
+
+/* 確保移動端導航動畫流暢 */
+.transition-all {
+  transition: all 0.3s ease-in-out;
+}
 #root {
   max-width: 1280px;
   margin: 0 auto;
