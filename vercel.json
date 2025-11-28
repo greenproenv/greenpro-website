@@ -1,31 +1,19 @@
 {
   "version": 2,
-  "name": "greenpro-website",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
   "routes": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/build/assets/$1"
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
     },
     {
-      "src": "/static/(.*)",
-      "dest": "/build/static/$1"
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/build/$1"
+      "dest": "/index.html"
     }
-  ],
-  "env": {
-    "REACT_APP_API_BASE_URL": "https://greenprogroup.com/api",
-    "REACT_APP_STRIPE_PUBLISHABLE_KEY": "pk_live_51SXr2QFgjw1i4JGvYBnn9GuPyWYeoGXyl9wEjkWx6Afox6dLGHiJjSlPSk5PLgck9ifLmLj3L8y0Ve3vSH45pfik00VS6KobM9"
-  }
+  ]
 }
