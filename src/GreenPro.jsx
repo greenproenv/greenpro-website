@@ -8,11 +8,18 @@ import {
   useStripe,
   useElements
 } from '@stripe/react-stripe-js';
+import "react-datepicker/dist/react-datepicker.css";
 
-// 初始化 Stripe
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+// 在 GreenPro.jsx 頂部添加環境檢查
+const isProduction = process.env.NODE_ENV === 'production';
+const API_BASE_URL = isProduction 
+  ? 'https://greenprogroup.com/api' 
+  : 'http://localhost:3000/api';
 
-// 付款表單組件
+// 初始化 Stripe - 使用正式生產環境密鑰
+const stripePromise = loadStripe('pk_live_51SXr2QFgjw1i4JGvYBnn9GuPyWYeoGXyl9wEjkWx6Afox6dLGHiJjSlPSk5PLgck9ifLmLj3L8y0Ve3vSH45pfik00VS6KobM9');
+
+// 付款表單組件 - 生產環境版本
 const CheckoutForm = ({ 
   amount, 
   onSuccess, 
@@ -24,11 +31,23 @@ const CheckoutForm = ({
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const [isStripeLoaded, setIsStripeLoaded] = useState(false);
+
+  // 檢查 Stripe 加載狀態
+  useEffect(() => {
+    if (stripe && elements) {
+      setIsStripeLoaded(true);
+      console.log('✅ Stripe and Elements loaded successfully');
+    } else {
+      console.log('⏳ Stripe or Elements not loaded yet');
+    }
+  }, [stripe, elements]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     
     if (!stripe || !elements) {
+      setError('Payment system not ready. Please try again.');
       return;
     }
 
@@ -40,7 +59,8 @@ const CheckoutForm = ({
       
       console.log('Creating payment intent for amount:', depositAmount);
 
-      const response = await fetch('/api/create-payment-intent', {
+      // 使用正式 API 端點
+      const response = await fetch(`${API_BASE_URL}/create-payment-intent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -117,25 +137,34 @@ const CheckoutForm = ({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Card Details
             </label>
-            <div className="border rounded-md p-3">
-              <CardElement
-                options={{
-                  style: {
-                    base: {
-                      fontSize: '16px',
-                      color: '#424770',
-                      '::placeholder': {
-                        color: '#aab7c4',
+            <div className="border-2 border-blue-300 rounded-md p-3 min-h-[60px] bg-white">
+              {!isStripeLoaded ? (
+                <div className="flex items-center justify-center h-8 text-gray-500">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mr-2"></div>
+                  Loading secure payment form...
+                </div>
+              ) : (
+                <CardElement
+                  options={{
+                    style: {
+                      base: {
+                        fontSize: '16px',
+                        color: '#424770',
+                        '::placeholder': {
+                          color: '#aab7c4',
+                        },
+                        backgroundColor: 'white',
                       },
                     },
-                  },
-                }}
-              />
+                    hidePostalCode: true,
+                  }}
+                />
+              )}
             </div>
           </div>
 
           {error && (
-            <div className="text-red-600 text-sm">{error}</div>
+            <div className="text-red-600 text-sm bg-red-50 p-2 rounded">{error}</div>
           )}
 
           <div className="flex gap-3 pt-4">
@@ -150,7 +179,7 @@ const CheckoutForm = ({
             <button
               type="submit"
               className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4 rounded disabled:opacity-50"
-              disabled={!stripe || isProcessing}
+              disabled={!stripe || !isStripeLoaded || isProcessing}
             >
               {isProcessing ? 'Processing...' : `Pay $${amount.toFixed(2)}`}
             </button>
@@ -159,7 +188,7 @@ const CheckoutForm = ({
 
         <div className="mt-4 text-xs text-gray-500">
           <p>🔒 Your payment is secure and encrypted</p>
-          <p>💳 Test card: 4242 4242 4242 4242</p>
+          <p className="mt-1">Stripe Status: {isStripeLoaded ? '✅ Loaded' : '⏳ Loading...'}</p>
         </div>
       </div>
     </div>
@@ -202,7 +231,10 @@ const GreenPro = () => {
     }
 
     // 設置當前年份
-    document.getElementById('current-year').textContent = new Date().getFullYear();
+    const currentYearElement = document.getElementById('current-year');
+    if (currentYearElement) {
+      currentYearElement.textContent = new Date().getFullYear();
+    }
     
     // 平滑滾動
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -265,6 +297,7 @@ const GreenPro = () => {
     setShowEstimate(false);
     setEstimate(null);
     setPaymentSuccess(false);
+    setShowPayment(false);
     setQuoteForm({
       name: '',
       phone: '',
@@ -276,11 +309,26 @@ const GreenPro = () => {
     });
   };
 
-  // 計算折扣後的訂金金額
+  // 計算折扣後的訂金金額 - 修復為 50%
   const calculateDepositAmount = () => {
-    if (!estimate) return 0;
-    const discountedTotal = estimate.totalEstimate * 0.95;
-    return discountedTotal * 0.5;
+    if (!estimate || !estimate.totalEstimate) {
+      console.error('沒有估算數據');
+      return 0;
+    }
+    
+    const total = estimate.totalEstimate;
+    // 明確計算步驟
+    const discountAmount = total * 0.05;      // 5% 折扣金額
+    const afterDiscount = total - discountAmount; // 折扣後價格
+    const depositAmount = afterDiscount * 0.5;    // 50% 訂金
+    
+    console.log('🎯 訂金計算詳情:');
+    console.log('   總價:', total);
+    console.log('   5% 折扣:', discountAmount);
+    console.log('   折扣後:', afterDiscount);
+    console.log('   50% 訂金:', depositAmount);
+    
+    return depositAmount;
   };
 
   // Formspree 提交函數
@@ -494,12 +542,14 @@ const GreenPro = () => {
     }
   };
 
-  // 處理支付訂金
+  // 處理支付訂金 - 修復版本
   const handlePayDeposit = () => {
+    console.log('handlePayDeposit called');
     if (!quoteForm.name || !quoteForm.email) {
       alert('Please fill in your name and email before making a payment.');
       return;
     }
+    console.log('Setting showPayment to true');
     setShowPayment(true);
   };
 
@@ -510,7 +560,11 @@ const GreenPro = () => {
         <header className="bg-gradient-to-r from-emerald-700 to-green-600 text-white">
           <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold">GP</div>
+              <img 
+                src="/assets/greenpro_logo.png" 
+                alt="Greenpro Environmental Ltd. Logo" 
+                className="h-12 w-12 object-contain"
+              />
               <div>
                 <h1 className="text-2xl font-bold">Greenpro Environmental Ltd.</h1>
                 <p className="text-sm">Demolition • Drywall removal • Clean-up • Waste removal</p>
@@ -554,7 +608,7 @@ const GreenPro = () => {
           </div>
         )}
 
-        {/* Payment Form */}
+        {/* Payment Form - 修復顯示邏輯 */}
         {showPayment && estimate && (
           <CheckoutForm
             amount={calculateDepositAmount()}
@@ -916,28 +970,43 @@ const GreenPro = () => {
                   {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
                 </div>
                 
-                <div>
+                {/* 日期和時間選擇器 - 修復對齊 */}
+                <div className="flex flex-col">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
                   <DatePicker
                     selected={bookingForm.date}
                     onChange={handleDateChange}
                     minDate={new Date()}
-                    placeholderText="Select date"
-                    className={`border p-3 rounded w-full ${formErrors.date ? 'border-red-500' : ''}`}
+                    placeholderText="Select a date"
+                    className={`border p-3 rounded w-full ${formErrors.date ? 'border-red-500' : 'border-gray-300'}`}
                     required
                     dateFormat="MMMM d, yyyy"
+                    showPopperArrow={false}
+                    popperPlacement="bottom-start"
                   />
                   {formErrors.date && <p className="text-red-500 text-sm mt-1">{formErrors.date}</p>}
                 </div>
                 
-                <div>
-                  <input 
-                    type="time" 
+                <div className="flex flex-col">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Time</label>
+                  <select 
                     name="time" 
-                    className={`border p-3 rounded w-full ${formErrors.time ? 'border-red-500' : ''}`} 
+                    className={`border p-3 rounded w-full ${formErrors.time ? 'border-red-500' : 'border-gray-300'}`}
                     value={bookingForm.time}
                     onChange={handleBookingInputChange}
-                    required 
-                  />
+                    required
+                  >
+                    <option value="">Select a time</option>
+                    <option value="08:00">8:00 AM</option>
+                    <option value="09:00">9:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="11:00">11:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="13:00">1:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                    <option value="15:00">3:00 PM</option>
+                    <option value="16:00">4:00 PM</option>
+                  </select>
                   {formErrors.time && <p className="text-red-500 text-sm mt-1">{formErrors.time}</p>}
                 </div>
                 
@@ -963,7 +1032,7 @@ const GreenPro = () => {
                   >
                     {isSubmitting ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>

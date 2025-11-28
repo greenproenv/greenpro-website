@@ -12,11 +12,13 @@
   "dependencies": {
     "@stripe/react-stripe-js": "^1.16.5",
     "@stripe/stripe-js": "^1.54.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "react": "^18.2.0",
-    "react-datepicker": "^4.8.0",
+    "react-datepicker": "^4.25.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "stripe": "^11.1.0"
+    "stripe": "^11.18.0"
   },
   "browserslist": {
     "production": [
