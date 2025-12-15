@@ -1,0 +1,9 @@
+{
+  "name": "greenprogroup-api",
+  "compatibility_date": "2025-12-03",
+  "main": "src/index.js",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "ENVIRONMENT": "production"
+  }
+}

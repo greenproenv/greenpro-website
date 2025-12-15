@@ -12,9 +12,10 @@ import "react-datepicker/dist/react-datepicker.css";
 
 // 在 GreenPro.jsx 頂部添加環境檢查
 const isProduction = process.env.NODE_ENV === 'production';
-const API_BASE_URL = isProduction 
-  ? 'https://greenprogroup.com/api' 
-  : 'http://localhost:3000/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 
+  (isProduction 
+    ? 'https://api.greenprogroup.com'  // 生产环境 API
+    : 'http://localhost:3000/api');    // 开发环境 API
 
 // 初始化 Stripe - 使用正式生產環境密鑰
 const stripePromise = loadStripe('pk_live_51SXr2QFgjw1i4JGvYBnn9GuPyWYeoGXyl9wEjkWx6Afox6dLGHiJjSlPSk5PLgck9ifLmLj3L8y0Ve3vSH45pfik00VS6KobM9');
@@ -619,101 +620,55 @@ const GreenPro = () => {
           />
         )}
 
-        {/* Hero Section */}
-        <section className="bg-emerald-700 text-white">
-          <div className="max-w-6xl mx-auto px-6 py-24 text-center">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-4">Safe. Fast. Environmentally Responsible.</h2>
-            <p className="text-lg md:text-xl mb-6">Professional demolition, drywall removal, site clean-ups, and waste disposal across your area.</p>
-            <div className="flex justify-center gap-4">
-              <a href="#quote" className="bg-emerald-500 hover:bg-emerald-600 px-6 py-3 rounded-lg font-semibold">Request a Quote</a>
-              <a href="#book" className="border border-white px-6 py-3 rounded-lg">Book Now</a>
+        {/* =====================================================
+            HERO SECTION – EMERGENCY / PRIORITY POSITIONING
+        ===================================================== */}
+        <section className="bg-emerald-700 text-white py-16 px-6">
+          <div className="max-w-6xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+              Emergency Demolition & Environmental Services
+            </h1>
+
+            <p className="text-lg md:text-xl mb-6">
+              Fast on-site service within <strong>24–48 hours</strong>.  
+              Licensed, insured, and compliant for residential & commercial projects.
+            </p>
+
+            <div className="flex flex-col md:flex-row justify-center gap-4">
+              <a
+                href="#quote"
+                className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-bold text-lg hover:bg-yellow-500 transition-colors"
+              >
+                Get Instant Estimate
+              </a>
+
+              <a
+                href="#quote"
+                className="bg-black px-6 py-3 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-colors"
+              >
+                ⚡ Pay Deposit & Get Priority
+              </a>
             </div>
           </div>
         </section>
 
-        {/* Services Section */}
-        <section id="services" className="py-16 bg-gray-50">
-          <div className="max-w-6xl mx-auto px-6">
-            <h2 className="text-3xl font-bold text-center mb-12">Our Services</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <div className="text-4xl mb-4">🏗️</div>
-                <h3 className="text-xl font-semibold mb-2">Interior Demolition</h3>
-                <p className="text-gray-600">Safe and efficient removal of interior structures, walls, and fixtures.</p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <div className="text-4xl mb-4">🧱</div>
-                <h3 className="text-xl font-semibold mb-2">Drywall Removal</h3>
-                <p className="text-gray-600">Professional drywall and gypsum board removal with minimal dust.</p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <div className="text-4xl mb-4">🧹</div>
-                <h3 className="text-xl font-semibold mb-2">Site Clean-Up</h3>
-                <p className="text-gray-600">Thorough site cleanup and debris removal after construction or renovation.</p>
-              </div>
-              <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <div className="text-4xl mb-4">🚛</div>
-                <h3 className="text-xl font-semibold mb-2">Garbage Removal</h3>
-                <p className="text-gray-600">Eco-friendly disposal of construction waste and other materials.</p>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* =====================================================
+            QUOTE SECTION (MOVED UP FOR CONVERSION)
+        ===================================================== */}
+        <section id="quote" className="py-16 px-6 bg-gray-50">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold mb-2 text-center">
+              Get Priority Service (Instant Estimate)
+            </h2>
 
-        {/* Gallery Section */}
-        <section className="py-16">
-          <div className="max-w-6xl mx-auto px-6">
-            <h2 className="text-3xl font-bold text-center mb-12">Our Work</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                <img 
-                  src="/assets/gallery/demolition-1.jpg" 
-                  alt="Demolition work"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                <img 
-                  src="/assets/gallery/cleanup-1.jpg" 
-                  alt="Clean-up service"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                <img 
-                  src="/assets/gallery/waste-removal-1.jpg" 
-                  alt="Waste removal"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                <img 
-                  src="/assets/gallery/project-complete-1.jpg" 
-                  alt="Project completion"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                <img 
-                  src="/assets/gallery/team-work-1.jpg" 
-                  alt="Team at work"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
-                <img 
-                  src="/assets/gallery/eco-disposal-1.jpg" 
-                  alt="Eco-friendly disposal"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+            <p className="text-center text-gray-600 mb-4">
+              Pay a deposit to receive priority scheduling and a <strong>5% discount</strong>.
+            </p>
 
-        {/* Quote Section */}
-        <section id="quote" className="py-16">
-          <div className="max-w-4xl mx-auto px-6">
+            <p className="text-xs text-center text-gray-500 mb-8">
+              💡 Tip: You can secure priority first. Final details can be confirmed on-site.
+            </p>
+
             <div className="bg-white rounded-2xl shadow-md p-6">
               <h3 className="text-2xl font-bold mb-3">Request a Quote</h3>
               <p className="text-sm text-gray-600 mb-4">Fill the form and get an instant estimate. We'll contact you with details.</p>
@@ -788,7 +743,7 @@ const GreenPro = () => {
                   <div className="flex gap-3 flex-wrap">
                     <button 
                       onClick={resetEstimate}
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition-colors"
                     >
                       New Estimate
                     </button>
@@ -796,7 +751,7 @@ const GreenPro = () => {
                     {!paymentSuccess && (
                       <button 
                         onClick={handlePayDeposit}
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center gap-2"
+                        className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded flex items-center gap-2 transition-colors font-bold"
                       >
                         <span>💰</span>
                         Pay Deposit & Get 5% Off
@@ -805,7 +760,7 @@ const GreenPro = () => {
                     
                     <button 
                       onClick={handleConfirmAndSchedule}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded"
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded transition-colors"
                     >
                       {paymentSuccess ? 'Schedule Service' : 'Confirm & Schedule'}
                     </button>
@@ -903,7 +858,7 @@ const GreenPro = () => {
 
                   <div className="flex gap-3 md:col-span-2">
                     <button 
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded flex items-center justify-center min-w-[120px]" 
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded flex items-center justify-center min-w-[120px] transition-colors" 
                       type="submit"
                       disabled={isSubmitting}
                     >
@@ -922,6 +877,168 @@ const GreenPro = () => {
                   </div>
                 </form>
               )}
+            </div>
+          </div>
+        </section>
+
+        {/* =====================================================
+            WHY CHOOSE US – TRUST BUILDERS
+        ===================================================== */}
+        <section className="py-16 px-6">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-12">Why Choose Greenpro</h2>
+            <div className="grid md:grid-cols-3 gap-8 text-center">
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="font-bold text-xl mb-3">Licensed & Insured</h3>
+                <p className="text-gray-600">
+                  Fully compliant with safety and environmental regulations. Peace of mind for residential and commercial projects.
+                </p>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="font-bold text-xl mb-3">Fast Response</h3>
+                <p className="text-gray-600">
+                  Priority service for urgent projects. We aim to be on-site within 24-48 hours for emergency situations.
+                </p>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="font-bold text-xl mb-3">Clear Pricing</h3>
+                <p className="text-gray-600">
+                  No hidden fees. Deposit applied to final project cost. Transparent estimates with detailed breakdowns.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Services Section */}
+        <section id="services" className="py-16 bg-gray-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <h2 className="text-3xl font-bold text-center mb-12">Our Services</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-4xl mb-4">🏗️</div>
+                <h3 className="text-xl font-semibold mb-2">Interior Demolition</h3>
+                <p className="text-gray-600">Safe and efficient removal of interior structures, walls, and fixtures.</p>
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-4xl mb-4">🧱</div>
+                <h3 className="text-xl font-semibold mb-2">Drywall Removal</h3>
+                <p className="text-gray-600">Professional drywall and gypsum board removal with minimal dust.</p>
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-4xl mb-4">🧹</div>
+                <h3 className="text-xl font-semibold mb-2">Site Clean-Up</h3>
+                <p className="text-gray-600">Thorough site cleanup and debris removal after construction or renovation.</p>
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-4xl mb-4">🚛</div>
+                <h3 className="text-xl font-semibold mb-2">Garbage Removal</h3>
+                <p className="text-gray-600">Eco-friendly disposal of construction waste and other materials.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =====================================================
+            HOW IT WORKS – REDUCE FRICTION
+        ===================================================== */}
+        <section className="bg-emerald-50 py-16 px-6">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
+            
+            <div className="space-y-8">
+              <div className="flex items-start gap-4">
+                <div className="bg-emerald-700 text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 text-lg font-bold">1</div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Request Estimate or Pay Deposit</h3>
+                  <p className="text-gray-700">Get an instant quote or secure priority scheduling with a 50% deposit (get 5% discount).</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <div className="bg-emerald-700 text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 text-lg font-bold">2</div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">We Contact You Within 24 Hours</h3>
+                  <p className="text-gray-700">Our team reaches out to confirm details and answer any questions.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <div className="bg-emerald-700 text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 text-lg font-bold">3</div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">On-Site Assessment</h3>
+                  <p className="text-gray-700">We visit your site to evaluate the project scope and provide final pricing.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <div className="bg-emerald-700 text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 text-lg font-bold">4</div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Clear Scope & Pricing</h3>
+                  <p className="text-gray-700">We provide a detailed scope of work and final pricing for your approval.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <div className="bg-emerald-700 text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 text-lg font-bold">5</div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Proceed Only If You Approve</h3>
+                  <p className="text-gray-700">Work begins only after you give the green light. No surprises.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Gallery Section */}
+        <section className="py-16">
+          <div className="max-w-6xl mx-auto px-6">
+            <h2 className="text-3xl font-bold text-center mb-12">Our Work</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+                <img 
+                  src="/assets/gallery/demolition-1.jpg" 
+                  alt="Demolition work"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+                <img 
+                  src="/assets/gallery/cleanup-1.jpg" 
+                  alt="Clean-up service"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+                <img 
+                  src="/assets/gallery/waste-removal-1.jpg" 
+                  alt="Waste removal"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+                <img 
+                  src="/assets/gallery/project-complete-1.jpg" 
+                  alt="Project completion"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+                <img 
+                  src="/assets/gallery/team-work-1.jpg" 
+                  alt="Team at work"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="bg-gray-200 rounded-lg aspect-video overflow-hidden">
+                <img 
+                  src="/assets/gallery/eco-disposal-1.jpg" 
+                  alt="Eco-friendly disposal"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -970,7 +1087,7 @@ const GreenPro = () => {
                   {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
                 </div>
                 
-                {/* 日期和時間選擇器 - 修復對齊 */}
+                {/* 日期和時間選擇器 */}
                 <div className="flex flex-col">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
                   <DatePicker
@@ -1026,7 +1143,7 @@ const GreenPro = () => {
 
                 <div className="md:col-span-2">
                   <button 
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded flex items-center justify-center w-full" 
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded flex items-center justify-center w-full transition-colors" 
                     type="submit"
                     disabled={isSubmitting}
                   >
@@ -1048,21 +1165,61 @@ const GreenPro = () => {
           </div>
         </section>
 
-        {/* Contact Section */}
-        <section id="contact" className="py-12">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <h3 className="text-2xl font-bold mb-2">Contact</h3>
-            <p className="text-sm text-gray-600">Phone: 778-836-7218 • Email: info@greenprogroup.com</p>
-            <p className="text-sm text-gray-600 mt-2">Greenpro Environmental Ltd. — Licensed, insured, and committed to eco-friendly disposal.</p>
+        {/* =====================================================
+            CONTACT / EMERGENCY CTA
+        ===================================================== */}
+        <section id="contact" className="py-16 px-6 text-center bg-emerald-700 text-white">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold mb-4">
+              Need Immediate Help?
+            </h2>
+
+            <p className="text-emerald-100 mb-6">
+              Call or message us now for urgent service.
+            </p>
+
+            <a
+              href="tel:7788367218"
+              className="bg-yellow-400 text-black px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-500 transition-colors inline-block"
+            >
+              📞 Call Now: 778-836-7218
+            </a>
+            
+            <div className="mt-8">
+              <p className="text-sm text-emerald-100">
+                Email: info@greenprogroup.com<br/>
+                Greenpro Environmental Ltd. — Licensed, insured, and committed to eco-friendly disposal.
+              </p>
+            </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="bg-emerald-800 text-white py-6 mt-8">
+        <footer className="bg-emerald-800 text-white py-6">
           <div className="max-w-6xl mx-auto px-6 text-center text-sm">
             © <span id="current-year"></span> Greenpro Environmental Ltd. • 778-836-7218 • info@greenprogroup.com
           </div>
         </footer>
+
+        {/* =====================================================
+            MOBILE STICKY BAR – HUGE FOR CONVERSION
+        ===================================================== */}
+        <div className="fixed bottom-0 left-0 right-0 bg-emerald-700 text-white flex justify-between items-center px-4 py-3 md:hidden z-50 shadow-lg">
+          <a href="tel:7788367218" className="font-bold flex items-center gap-2">
+            <span>📞</span>
+            Call Now
+          </a>
+          <a
+            href="#quote"
+            className="bg-yellow-400 text-black px-4 py-2 rounded font-bold"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('quote')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            Pay Deposit
+          </a>
+        </div>
       </div>
     </Elements>
   );
