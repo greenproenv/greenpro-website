@@ -556,48 +556,66 @@ const GreenPro = () => {
 
   return (
     <Elements stripe={stripePromise}>
-      <div className="font-sans text-gray-800">
-        {/* Header with Mobile Menu */}
-        <header className="bg-gradient-to-r from-emerald-700 to-green-600 text-white">
-          <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div className="font-sans text-gray-800 relative">
+        {/* ================= GOOGLE ADS 優化頭部 ================= */}
+        <header className="bg-white shadow sticky top-0 z-40">
+          <div className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
             <div className="flex items-center gap-3">
               <img 
                 src="/assets/greenpro_logo.png" 
                 alt="Greenpro Environmental Ltd. Logo" 
-                className="h-12 w-12 object-contain"
+                className="h-10 w-10 object-contain"
               />
-              <div>
-                <h1 className="text-2xl font-bold">Greenpro Environmental Ltd.</h1>
-                <p className="text-sm">Demolition • Drywall removal • Clean-up • Waste removal</p>
+              <div className="font-extrabold text-xl">
+                GreenPro Environmental
               </div>
             </div>
-            
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-6">
-              <a href="#services" className="hover:underline">Services</a>
-              <a href="#quote" className="hover:underline">Get a Quote</a>
-              <a href="#book" className="hover:underline">Book</a>
-              <a href="#contact" className="border border-white px-3 py-2 rounded-md">Contact</a>
-            </div>
-            
+
+            <nav className="hidden md:flex gap-4">
+              <a
+                href="#quote"
+                className="bg-yellow-400 text-black px-4 py-2 rounded font-bold hover:bg-yellow-500 transition-colors"
+              >
+                Get Estimate
+              </a>
+              <a
+                href="tel:7788367218"
+                className="border border-emerald-600 text-emerald-700 px-4 py-2 rounded hover:bg-emerald-50 transition-colors"
+              >
+                Call Now
+              </a>
+            </nav>
+
             {/* Mobile Menu Button */}
             <button 
               className="md:hidden flex flex-col justify-center items-center w-8 h-8"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <span className={`bg-white block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isMenuOpen ? 'rotate-45 translate-y-1' : '-translate-y-0.5'}`}></span>
-              <span className={`bg-white block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-              <span className={`bg-white block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isMenuOpen ? '-rotate-45 -translate-y-1' : 'translate-y-0.5'}`}></span>
+              <span className={`bg-gray-800 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isMenuOpen ? 'rotate-45 translate-y-1' : '-translate-y-0.5'}`}></span>
+              <span className={`bg-gray-800 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+              <span className={`bg-gray-800 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isMenuOpen ? '-rotate-45 -translate-y-1' : 'translate-y-0.5'}`}></span>
             </button>
           </div>
-          
+
           {/* Mobile Navigation Menu */}
-          <div className={`md:hidden bg-emerald-800 transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-64 py-4' : 'max-h-0 py-0'} overflow-hidden`}>
+          <div className={`md:hidden bg-white shadow-lg transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-48 py-4' : 'max-h-0 py-0'} overflow-hidden`}>
             <div className="max-w-6xl mx-auto px-6 flex flex-col space-y-4">
-              <a href="#services" className="hover:underline">Services</a>
-              <a href="#quote" className="hover:underline">Get a Quote</a>
-              <a href="#book" className="hover:underline">Book</a>
-              <a href="#contact" className="border border-white px-3 py-2 rounded-md text-center">Contact</a>
+              <a 
+                href="#quote" 
+                className="bg-yellow-400 text-black px-4 py-3 rounded font-bold text-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Get Estimate
+              </a>
+              <a 
+                href="tel:7788367218" 
+                className="border border-emerald-600 text-emerald-700 px-4 py-3 rounded text-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Call Now
+              </a>
+              <a href="#services" className="hover:underline py-2" onClick={() => setIsMenuOpen(false)}>Services</a>
+              <a href="#book" className="hover:underline py-2" onClick={() => setIsMenuOpen(false)}>Book Online</a>
             </div>
           </div>
         </header>
@@ -609,7 +627,7 @@ const GreenPro = () => {
           </div>
         )}
 
-        {/* Payment Form - 修復顯示邏輯 */}
+        {/* Payment Form */}
         {showPayment && estimate && (
           <CheckoutForm
             amount={calculateDepositAmount()}
@@ -620,41 +638,68 @@ const GreenPro = () => {
           />
         )}
 
-        {/* =====================================================
-            HERO SECTION – EMERGENCY / PRIORITY POSITIONING
-        ===================================================== */}
-        <section className="bg-emerald-700 text-white py-16 px-6">
-          <div className="max-w-6xl mx-auto text-center">
+        {/* ================= 緊急服務英雄區塊 - GOOGLE ADS 優化 ================= */}
+        <section className="bg-emerald-700 text-white py-20 px-6">
+          <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-              Emergency Demolition & Environmental Services
+              Emergency Asbestos & Environmental Services
             </h1>
 
             <p className="text-lg md:text-xl mb-6">
-              Fast on-site service within <strong>24–48 hours</strong>.  
-              Licensed, insured, and compliant for residential & commercial projects.
+              24–48 Hour Priority Response · Licensed · Insured · Compliant
             </p>
 
             <div className="flex flex-col md:flex-row justify-center gap-4">
               <a
                 href="#quote"
-                className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-bold text-lg hover:bg-yellow-500 transition-colors"
+                className="bg-yellow-400 text-black px-8 py-4 rounded-lg font-bold text-xl hover:bg-yellow-500 transition-colors"
               >
-                Get Instant Estimate
+                ⚡ Pay Deposit & Lock Priority
               </a>
 
               <a
-                href="#quote"
-                className="bg-black px-6 py-3 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-colors"
+                href="tel:7788367218"
+                className="bg-black px-8 py-4 rounded-lg font-bold text-xl hover:bg-gray-800 transition-colors inline-flex items-center justify-center"
               >
-                ⚡ Pay Deposit & Get Priority
+                📞 Call Now for Immediate Help
               </a>
+            </div>
+
+            <p className="text-sm mt-6 text-emerald-100">
+              Serving Vancouver, Burnaby, Richmond, Surrey, and Greater Vancouver.
+            </p>
+          </div>
+        </section>
+
+        {/* ================= 目標客戶區塊 ================= */}
+        <section className="py-12 px-6 bg-gray-100">
+          <div className="max-w-4xl mx-auto text-center">
+            <h3 className="text-xl font-bold mb-4">
+              This Emergency Service Is For:
+            </h3>
+
+            <div className="grid md:grid-cols-2 gap-4 text-left max-w-2xl mx-auto">
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-600">•</span>
+                <span>Renovation stopped due to asbestos</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-600">•</span>
+                <span>Property sale requiring inspection</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-600">•</span>
+                <span>Emergency demolition or contamination</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-600">•</span>
+                <span>Contractor compliance issues</span>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* =====================================================
-            QUOTE SECTION (MOVED UP FOR CONVERSION)
-        ===================================================== */}
+        {/* ================= 報價區塊 - 優先位置 ================= */}
         <section id="quote" className="py-16 px-6 bg-gray-50">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold mb-2 text-center">
@@ -662,7 +707,7 @@ const GreenPro = () => {
             </h2>
 
             <p className="text-center text-gray-600 mb-4">
-              Pay a deposit to receive priority scheduling and a <strong>5% discount</strong>.
+              Secure priority scheduling with a refundable deposit.
             </p>
 
             <p className="text-xs text-center text-gray-500 mb-8">
@@ -881,9 +926,7 @@ const GreenPro = () => {
           </div>
         </section>
 
-        {/* =====================================================
-            WHY CHOOSE US – TRUST BUILDERS
-        ===================================================== */}
+        {/* ================= 信任建立區塊 ================= */}
         <section className="py-16 px-6">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-12">Why Choose Greenpro</h2>
@@ -941,9 +984,7 @@ const GreenPro = () => {
           </div>
         </section>
 
-        {/* =====================================================
-            HOW IT WORKS – REDUCE FRICTION
-        ===================================================== */}
+        {/* ================= 工作流程 ================= */}
         <section className="bg-emerald-50 py-16 px-6">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
@@ -1165,9 +1206,7 @@ const GreenPro = () => {
           </div>
         </section>
 
-        {/* =====================================================
-            CONTACT / EMERGENCY CTA
-        ===================================================== */}
+        {/* ================= 緊急聯繫 CTA ================= */}
         <section id="contact" className="py-16 px-6 text-center bg-emerald-700 text-white">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold mb-4">
@@ -1180,7 +1219,7 @@ const GreenPro = () => {
 
             <a
               href="tel:7788367218"
-              className="bg-yellow-400 text-black px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-500 transition-colors inline-block"
+              className="bg-yellow-400 text-black px-8 py-4 rounded-lg font-bold text-xl hover:bg-yellow-500 transition-colors inline-block mb-6"
             >
               📞 Call Now: 778-836-7218
             </a>
@@ -1201,9 +1240,7 @@ const GreenPro = () => {
           </div>
         </footer>
 
-        {/* =====================================================
-            MOBILE STICKY BAR – HUGE FOR CONVERSION
-        ===================================================== */}
+        {/* ================= 移動端固定底欄 ================= */}
         <div className="fixed bottom-0 left-0 right-0 bg-emerald-700 text-white flex justify-between items-center px-4 py-3 md:hidden z-50 shadow-lg">
           <a href="tel:7788367218" className="font-bold flex items-center gap-2">
             <span>📞</span>
